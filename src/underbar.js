@@ -339,15 +339,17 @@
   _.memoize = function(func) {
     var prevCalled = [];
     return function(){  
-      var firstArgument = arguments[0].toString();
+      var firstArgument = JSON.stringify(arguments);
       if (getObjWithProp(prevCalled, firstArgument) !== undefined ) {
-        return getObjWithProp(prevCalled, firstArgument)[firstArgument];
-      } else {
-        var result = func.call(this, arguments[0]);
-        prevCalled.push({firstArgument:result});
-        return result;
-      }
-    };
+      return getObjWithProp(prevCalled, firstArgument)[firstArgument];
+    } else {
+      var result = func.apply(this, arguments);
+      var resultObj = {};
+      resultObj[firstArgument] = result;
+      prevCalled.push(resultObj);
+      return result;
+    }
+   }
   };
   
   
